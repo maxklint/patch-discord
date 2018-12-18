@@ -8,6 +8,7 @@ rslider bounds(-1000, -1000, 100, 100) range(0, 127, 0, 1, 1) colour(0, 0, 0) tr
 -n -d -m0d
 </CsOptions>
 <CsInstruments>
+sr = 48000
 ksmps = 32
 nchnls = 2
 0dbfs = 1
@@ -30,7 +31,7 @@ endin
 
 </CsInstruments>
 <CsScore>
+i 1 0 z
 i 99 0 0
-f0 z
 </CsScore>
 </CsoundSynthesizer>
