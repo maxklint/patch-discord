@@ -36,10 +36,14 @@ nchnls = 2
 #include "printarr.i"
 #include "shuffling.i"
 #include "permutation.i"
+#include "algebra.i"
 
 instr 1
 iNumIns = 8
 iNumOuts = 8
+
+kAleatoric chnget "is_aleatoric"
+
 ; The combination {1, 0.05} results in approximately 10 minute cycle
 iUpdateTempo = 1 ; once per second
 iPhaseIncr = 0.01 ; in radians
@@ -96,14 +100,36 @@ until kIndx == lenarray(kKnobs) do
     kIndx += 1
 od
 
-kOut[] init iNumOuts
+kResult[] init iNumOuts
+if kAleatoric > 0 then
+    kTranslated[] = kKnobs + kTranslation
+
+    kPermuted[] init iNumOuts
+    kPermuted MatrixVectMult iNumOuts, iNumIns, kPermutation, kTranslated
+    
+    kIndx = 0
+    until kIndx == iNumOuts do
+        kResult[kIndx] mirror kPermuted[kIndx], 0, 127
+        kIndx += 1
+    od
+else
+    kIndx = 0
+    until kIndx == iNumOuts do
+        kResult[kIndx] = kKnobs[kIndx]
+        kIndx += 1
+    od
+endif
+
+kPrevResult[] init iNumOuts
 kIndx = 0
-until kIndx == lenarray(kOut) do
-    if kOut[kIndx] != kKnobs[kIndx] then
-        printks "CC: %d; VAL: %d\\n", 0, kCCs[kIndx], kKnobs[kIndx]
-        outkc iMidiChan, kCCs[kIndx], kKnobs[kIndx], 0, 127
+until kIndx == iNumOuts do
+    if kPrevResult[kIndx] != kResult[kIndx] then
+        printks "CC: %d; VAL: %d\\n", 0, kCCs[kIndx], kResult[kIndx]
+        outkc iMidiChan, kCCs[kIndx], kResult[kIndx], 0, 127
+        Schn sprintfk "knob_out%d", kIndx+1
+        chnset kResult[kIndx], Schn
     endif
-    kOut[kIndx] = kKnobs[kIndx]
+    kPrevResult[kIndx] = kResult[kIndx]
     kIndx += 1
 od
 endin
