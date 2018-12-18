@@ -44,7 +44,6 @@ kPermutation[][] init iNumOuts, iNumIns
 ; initialization
 kOnce init 0
 if kOnce == 0 then
-
     kIndx = 0
     until kIndx == lenarray(kTranslation) do
         kTranslation[kIndx] rnd31 127, 0
@@ -59,14 +58,9 @@ if kOnce == 0 then
     od
     kIndx = 0
     until kIndx == lenarray(kShuffling) do
-        kCol init 0
         kTmp[] init iNumIns
         kTmp GenShuffling iNumIns
-        kCol = 0
-        until kCol == iNumIns do
-            kShuffling[kIndx][kCol] = kTmp[kCol]
-            kCol += 1
-        od
+        kShuffling setrow kTmp, kIndx
         kIndx += 1
     od
     kOnce = 1
