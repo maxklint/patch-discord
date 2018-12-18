@@ -72,6 +72,17 @@ until kIndx == lenarray(kKnobs) do
     kKnobs[kIndx] = kVal
     kIndx += 1
 od
+
+kOut[] init iNumOuts
+kIndx = 0
+until kIndx == lenarray(kOut) do
+    if kOut[kIndx] != kKnobs[kIndx] then
+        printks "CC: %d; VAL: %d\\n", 0, kCCs[kIndx], kKnobs[kIndx]
+        outkc iMidiChan, kCCs[kIndx], kKnobs[kIndx], 0, 127
+    endif
+    kOut[kIndx] = kKnobs[kIndx]
+    kIndx += 1
+od
 endin
 
 </CsInstruments>
