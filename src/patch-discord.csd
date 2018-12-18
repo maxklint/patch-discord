@@ -23,17 +23,25 @@ nchnls = 2
 
 #include "printarr.i"
 #include "shuffling.i"
+#include "permutation.i"
 
 instr 1
 iNumIns = 8
 iNumOuts = 8
+; The combination {1, 0.05} results in approximately 10 minute cycle
+iUpdateTempo = 1 ; once per second
+iPhaseIncr = 0.01 ; in radians
+
 iMidiChan = 1
 kCCs[] fillarray 22, 23, 24, 25, 26, 27, 28, 29
 
+kPhase init 0
 kTranslation[] init iNumIns
 kInitPhase[] init iNumOuts
 kShuffling[][] init iNumOuts, iNumIns
+kPermutation[][] init iNumOuts, iNumIns
 
+; initialization
 kOnce init 0
 if kOnce == 0 then
 
@@ -64,6 +72,15 @@ if kOnce == 0 then
     kOnce = 1
 endif
 
+; state update cycle
+kUpdateTrig metro iUpdateTempo
+if kUpdateTrig == 1 then
+    kPermutation GenPermutation iNumOuts, iNumIns, kShuffling, kInitPhase, kPhase
+
+    kPhase += iPhaseIncr
+endif
+
+; control cycle
 kKnobs[] init iNumIns
 kIndx = 0
 until kIndx == lenarray(kKnobs) do
