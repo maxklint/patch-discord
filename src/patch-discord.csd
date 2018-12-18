@@ -1,7 +1,7 @@
 <Cabbage>
 form caption("patch discord") size(600, 600), colour(234, 234, 234), pluginid("def1")
 
-rslider bounds(-1000, -1000, 100, 100) range(0, 1, 0, 1, 0.001) colour(0, 0, 0, 10) trackercolour(232, 217, 9) trackerinsideradius(0.4) widgetarray("knob", 8)
+rslider bounds(-1000, -1000, 100, 100) range(0, 127, 0, 1, 1) colour(0, 0, 0) trackercolour(255, 64, 34) trackerinsideradius(0.33) widgetarray("knob", 8)
 </Cabbage>
 <CsoundSynthesizer>
 <CsOptions>
