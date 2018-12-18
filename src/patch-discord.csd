@@ -1,7 +1,15 @@
 <Cabbage>
 form caption("patch discord") size(600, 600), colour(234, 234, 234), pluginid("def1")
 
-rslider bounds(-1000, -1000, 100, 100) range(0, 127, 0, 1, 1) colour(0, 0, 0) trackercolour(255, 64, 34) trackerinsideradius(0.33) widgetarray("knob", 8)
+#define KNOB range(0, 127, 0, 1, 1) colour(0, 0, 0) trackercolour(255, 64, 34) trackerinsideradius(0.33)
+rslider bounds(25, 150, 100, 100) channel("knob1") $KNOB
+rslider bounds(175, 150, 100, 100) channel("knob2") $KNOB
+rslider bounds(325, 150, 100, 100) channel("knob3") $KNOB
+rslider bounds(475, 150, 100, 100) channel("knob4") $KNOB
+rslider bounds(25, 350, 100, 100) channel("knob5") $KNOB
+rslider bounds(175, 350, 100, 100) channel("knob6") $KNOB
+rslider bounds(325, 350, 100, 100) channel("knob7") $KNOB
+rslider bounds(475, 350, 100, 100) channel("knob8") $KNOB
 </Cabbage>
 <CsoundSynthesizer>
 <CsOptions>
@@ -19,6 +27,8 @@ nchnls = 2
 instr 1
 iNumIns = 8
 iNumOuts = 8
+iMidiChan = 1
+kCCs[] fillarray 22, 23, 24, 25, 26, 27, 28, 29
 
 kTranslation[] init iNumIns
 kInitPhase[] init iNumOuts
@@ -26,6 +36,7 @@ kShuffling[][] init iNumOuts, iNumIns
 
 kOnce init 0
 if kOnce == 0 then
+
     kIndx = 0
     until kIndx == lenarray(kTranslation) do
         kTranslation[kIndx] rnd31 127, 0
@@ -63,25 +74,8 @@ until kIndx == lenarray(kKnobs) do
 od
 endin
 
-instr 99
-; automatic gui layout
-; place the slider widgets in a 2x4 grid
-iCnt init 0
-iCntRows init 0
-
-while iCnt < 8 do
-    S1 sprintfk "pos(%d, %d)", iCnt%4*150+25, iCntRows*200+150
-    S2 sprintfk "knob_ident%d", iCnt+1
-    chnset S1, S2
-    iCnt = iCnt + 1
-    iCntRows = (iCnt%4==0 ? iCntRows+1 : iCntRows)
-od
-
-endin
-
 </CsInstruments>
 <CsScore>
 i 1 0 z
-i 99 0 0
 </CsScore>
 </CsoundSynthesizer>
