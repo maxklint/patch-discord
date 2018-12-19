@@ -50,10 +50,134 @@ ksmps = 32
 nchnls = 2
 0dbfs = 1
 
-#include "printarr.i"
-#include "shuffling.i"
-#include "permutation.i"
-#include "algebra.i"
+opcode PrintArray, 0, k[]P
+;adapted from http://write.flossmanuals.net/csound/e-arrays/ example 03E21
+kArr[], ktrig xin
+kppr init 0 ; elements per row
+kend init 0
+kprec init 0
+kndx init 0
+kprint init 1
+
+if ktrig > 0 then
+    kppr = 20
+    kend = lenarray(kArr)
+    kprec = 3
+    kndx = 0
+
+    Sformat sprintfk "%%%d.%df, ", kprec+3, kprec
+    Sdump sprintfk "%s", "["
+    loop:
+        Snew sprintfk Sformat, kArr[kndx]
+        Sdump strcatk Sdump, Snew
+        kmod = (kndx+1) % kppr
+        if kmod == 0 && kndx != kend-1 then
+            kprint += 1
+            printf "%s\n", kprint, Sdump
+            Sdump strcpyk " "
+        endif
+        loop_lt kndx, 1, kend, loop
+    klen strlenk Sdump
+    Slast strsubk Sdump, 0, klen-2
+    kprint += 1
+    printf "%s]\n", kprint, Slast
+endif
+endop
+
+opcode GenShuffling, k[], i
+iLen xin
+kIn[] init iLen
+kOut[] init iLen
+
+kCnt = 0
+
+loop1:
+    kIn[kCnt] = kCnt
+    loop_lt kCnt, 1, iLen, loop1
+
+kCnt = 0
+kRange = iLen
+
+loop2:
+    ;copy a random element to kOut
+    kRnd rnd31 kRange-.0001, 0
+    kRnd = int(abs(kRnd))
+    kOut[kCnt] = kIn[kRnd]
+    ;replace it with the last unused element in kIn
+    kIn[kRnd] = kIn[kRange - 1]
+    ;adapt range (new length)
+    kRange -= 1
+    loop_lt kCnt, 1, iLen, loop2
+    
+xout kOut
+endop
+
+opcode Shuffle, k[], k[]k[]
+kIn[], kShuf[] xin
+iLen init lenarray(kIn)
+kOut[] init iLen
+
+kCnt = 0
+
+loop:
+    kDestination = kShuf[kCnt]
+    kOut[kDestination] = kIn[kCnt]
+    loop_lt kCnt, 1, iLen, loop
+xout kOut
+endop
+
+opcode GenPermutation, k[][], iik[][]k[]k
+; kPermutation[][] GenPermutation iRows, iCols, kShuffling[][], kInitPhase[], kPhase
+iRows, iCols, kShuffling[][], kInitPhase[], kPhase xin
+
+kPermutation[][] init iRows, iCols
+kRow init 0
+kCol init 0
+
+kRow = 0
+until kRow == iRows do
+    ; sample a sine
+    kSine[] init iCols
+    kCol = 0
+    until kCol == iCols do
+        kSine[kCol] = 2 * sin(((kCol * 2 * $M_PI) / (iCols - 1)) + (kInitPhase[kRow] + kPhase))
+        kCol += 1
+    od
+
+    kShufflingRow[] init iCols
+    kShufflingRow getrow kShuffling, kRow
+
+    ; shuffle sine samples
+    kRowTmp[] init iCols
+    kRowTmp Shuffle kSine, kShufflingRow
+
+    kPermutation setrow kRowTmp, kRow
+
+    kRow += 1
+od
+
+xout kPermutation
+endop
+
+opcode MatrixVectMult, k[], iik[][]k[]
+; kProduct[] MatrixVectMult iRows, iCols, kMatrix[][], kVector[]
+iRows, iCols, kMatrix[][], kVector[] xin
+kProduct[] init iRows
+
+kRow init 0
+kCol init 0
+kRow = 0
+until kRow == iRows do
+    kPermRow[] init iCols
+    kPermRow getrow kMatrix, kRow
+    kMultiplied[] = kPermRow * kVector
+    kSum sumarray kMultiplied
+    kProduct[kRow] = kSum
+    kRow += 1
+od
+
+xout kProduct
+endop
 
 instr 1
 iNumIns = 8
