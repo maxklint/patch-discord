@@ -42,7 +42,7 @@ label bounds(480, 560, 80, 15) text("aleatoric")
 </Cabbage>
 <CsoundSynthesizer>
 <CsOptions>
--n -d -m0d
+-n -d -m0d -+rtmidi=null -Q0 -M0 --midi-key=4 --midi-velocity=5
 </CsOptions>
 <CsInstruments>
 sr = 48000
@@ -151,6 +151,8 @@ until kIndx == iNumOuts do
     kPrevResult[kIndx] = kResult[kIndx]
     kIndx += 1
 od
+
+midion iMidiChan, p4, p5
 endin
 
 </CsInstruments>
