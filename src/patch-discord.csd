@@ -180,6 +180,11 @@ xout kProduct
 endop
 
 instr 1
+; firstly, pass through all audio unaffected
+aaudio[] init 2
+aaudio in
+out aaudio
+
 iNumIns = 8
 iNumOuts = 8
 
