@@ -37,8 +37,13 @@ rslider bounds(465, 340, 120, 120) channel("knob_out8") $KNOB_OUT
 rslider bounds(475, 350, 100, 100) channel("knob_in8") $KNOB_IN
 combobox bounds(500, 450, 50, 20) channel("combo_cc8") value(8) $COMBO_CC
 
-checkbox bounds(555, 560, 15, 15) value(1) channel("is_aleatoric") colour:0(0, 0, 0, 220) colour:1(255, 64, 34)
-label bounds(480, 560, 80, 15) text("aleatoric")
+checkbox bounds(555, 535, 15, 15) value(0) channel("is_aleatoric") colour:0(0, 0, 0, 220) colour:1(255, 64, 34)
+label bounds(470, 535, 80, 15) text("aleatoric")
+
+checkbox bounds(555, 560, 15, 15) value(0) channel("is_console_on") colour:0(0, 0, 0, 220) colour:1(255, 64, 34)
+label bounds(442, 560, 100, 15) text("show console")
+
+csoundoutput bounds(10, 10, 580, 120) identchannel("console")
 </Cabbage>
 <CsoundSynthesizer>
 <CsOptions>
@@ -190,8 +195,7 @@ iNumOuts = 8
 
 kAleatoric chnget "is_aleatoric"
 
-; The combination {1, 0.05} results in approximately 10 minute cycle
-iUpdateTempo = 1 ; once per second
+kConsoleOn chnget "is_console_on"
 iPhaseIncr = 0.01 ; in radians
 
 iMidiChan = 1
@@ -202,6 +206,13 @@ kTranslation[] init iNumIns
 kInitPhase[] init iNumOuts
 kShuffling[][] init iNumOuts, iNumIns
 kPermutation[][] init iNumOuts, iNumIns
+
+; show/hide csound output
+kConsoleSwitch changed kConsoleOn
+if kConsoleSwitch == 1 then
+    Sconsole_visible sprintfk "visible(%d)", kConsoleOn
+    chnset Sconsole_visible, "console"  
+endif
 
 ; initialization
 kOnce init 0
@@ -272,7 +283,6 @@ until kIndx == iNumOuts do
     if kPrevResult[kIndx] != kResult[kIndx] then
         Scc sprintfk "combo_cc%d", kIndx+1
         kCCindx chnget Scc
-        printks "CC: %d; VAL: %d\\n", 0, iCCs[kCCindx], kResult[kIndx]
         outkc iMidiChan, iCCs[kCCindx], kResult[kIndx], 0, 127
         Schn sprintfk "knob_out%d", kIndx+1
         chnset kResult[kIndx], Schn
