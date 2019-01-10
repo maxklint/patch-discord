@@ -41,7 +41,7 @@ combobox bounds(500, 450, 50, 20) channel("combo_cc8") value(8) $COMBO_CC
 rslider bounds(548, 504, 30, 30) channel("drift_rate") $KNOB_CTRL
 label bounds(470, 510, 80, 15) text("drift rate")
 
-checkbox bounds(555, 535, 15, 15) value(0) channel("is_aleatoric") colour:0(0, 0, 0, 220) colour:1(255, 64, 34)
+checkbox bounds(555, 535, 15, 15) value(1) channel("is_aleatoric") colour:0(0, 0, 0, 220) colour:1(255, 64, 34)
 label bounds(470, 535, 80, 15) text("aleatoric")
 
 checkbox bounds(555, 560, 15, 15) value(0) channel("is_console_on") colour:0(0, 0, 0, 220) colour:1(255, 64, 34)
