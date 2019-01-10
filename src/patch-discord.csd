@@ -3,6 +3,7 @@ form caption("patch discord") size(600, 600), colour(234, 234, 234), pluginid("d
 
 #define KNOB_IN  range(0, 127, 0, 1, 1) colour(0, 0, 0)    trackercolour(255, 64, 34) trackerinsideradius(0.33)
 #define KNOB_OUT range(0, 127, 0, 1, 1) colour(0, 0, 0, 0) trackercolour(34, 64, 255) trackerinsideradius(0.8) active(0)
+#define KNOB_CTRL range(0, 8, 1, 0.5, 0.05) colour(0, 0, 0) trackercolour(255, 64, 34) trackerinsideradius(0.5)
 #define COMBO_CC items("CC16", "CC17", "CC18", "CC19", "CC20", "CC21", "CC22", "CC23", "CC24", "CC25", "CC26", "CC27", "CC28", "CC29", "CC30", "CC31", "CC70", "CC71", "CC72", "CC73", "CC74", "CC75", "CC76", "CC77", "CC78", "CC79")
 
 rslider bounds( 15, 140, 120, 120) channel("knob_out1") $KNOB_OUT
@@ -36,6 +37,9 @@ combobox bounds(350, 450, 50, 20) channel("combo_cc7") value(7) $COMBO_CC
 rslider bounds(465, 340, 120, 120) channel("knob_out8") $KNOB_OUT
 rslider bounds(475, 350, 100, 100) channel("knob_in8") $KNOB_IN
 combobox bounds(500, 450, 50, 20) channel("combo_cc8") value(8) $COMBO_CC
+
+rslider bounds(548, 504, 30, 30) channel("drift_rate") $KNOB_CTRL
+label bounds(470, 510, 80, 15) text("drift rate")
 
 checkbox bounds(555, 535, 15, 15) value(0) channel("is_aleatoric") colour:0(0, 0, 0, 220) colour:1(255, 64, 34)
 label bounds(470, 535, 80, 15) text("aleatoric")
@@ -196,6 +200,8 @@ iNumOuts = 8
 kAleatoric chnget "is_aleatoric"
 
 kConsoleOn chnget "is_console_on"
+
+kUpdateTempo chnget "drift_rate"
 iPhaseIncr = 0.01 ; in radians
 
 iMidiChan = 1
@@ -240,7 +246,7 @@ if kOnce == 0 then
 endif
 
 ; state update cycle
-kUpdateTrig metro iUpdateTempo
+kUpdateTrig metro kUpdateTempo
 if kUpdateTrig == 1 then
     kPermutation GenPermutation iNumOuts, iNumIns, kShuffling, kInitPhase, kPhase
     
